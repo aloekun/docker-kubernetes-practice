@@ -58,3 +58,17 @@ docker network create wordpress000net4
 docker run --name mariadb000ex17 -dit --net=wordpress000net4 -e MYSQL_ROOT_PASSWORD=mariarootpass -e MYSQL_DATABASE=wordpress000db -e MYSQL_USER=wordpress000aloekun -e MYSQL_PASSWORD=waloekunpass mariadb --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-authentication-plugin=mysql_native_password
 docker run --name wordpress000ex18 -dit --net=wordpress000net4 -p 8088:80 -e WORDPRESS_DB_HOST=mariadb000ex17 -e WORDPRESS_DB_NAME=wordpress000db -e WORDPRESS_DB_USER=wordpress000aloekun -e WORDPRESS_DB_PASSWORD=waloekunpass wordpress
 ```
+
+### ホストマシンからDockerコンテナにファイルをコピー
+※ ホストマシン上にパスに該当するファイルが必要
+```
+docker run --name apa000ex19 -d -p 8089:80 httpd
+docker cp E:\work\docker-kubernetes-practice\index.html apa000ex19:/usr/local/apache2/htdocs/
+```
+
+### Dockerコンテナからホストマシンにファイルをコピー
+※ ホストマシン上にパスに該当するファイルが必要
+```
+docker run --name apa000ex19 -d -p 8089:80 httpd
+docker cp apa000ex19:/usr/local/apache2/htdocs/index.html E:\work\docker-kubernetes-practice
+```

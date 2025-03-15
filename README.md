@@ -163,3 +163,26 @@ docker container inspect apa000ex21
     ],
     ...
 ```
+
+### Docker コンテナからイメージを作成
+```
+docker run --name apa000ex22 -d -p 8092:80 httpd
+docker commit apa000ex22 ex22_original1
+```
+次のコマンドでイメージができたことを確認
+```
+docker image ls
+```
+
+### Dockerfile からイメージを作成
+フォルダ内に Dockerfile を置いて、`docker build ***` コマンドでイメージを作成できる。<br>
++ Dockerfile の中身(ApacheのみのWebサーバ)
+```
+FROM httpd
+COPY index.html /usr/local/apache2/htdocs/
+```
+次のコマンドでフォルダからイメージを作成する<br>
+※ ホストマシン上にパスに該当するフォルダが必要
+```
+docker build -t ex22_original2 E:\work\docker-kubernetes-practice\apa_folder\
+```

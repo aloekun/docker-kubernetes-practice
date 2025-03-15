@@ -30,6 +30,42 @@ Web サーバー(Apache, nginx) や DB(MySQL, MariaDB) などの主要なソフ�
 これにより、 1 人が作った Docker イメージをチームに共有して、開発環境を統一する使い方ができる。
 
 # 使用例
+## よく使うコマンド
+
+コンテナ操作は `docker container ***` の形式を取る
+
++ コンテナの確認（稼働中のみ）
+```
+docker container ls
+```
+旧バージョンは次のコマンド
+```
+docker ps
+```
++ コンテナの確認（停止中を含む）
+```
+docker container ls -a
+```
+
++ コンテナの作成
+```
+docker container create [コンテナ名]
+```
+
++ コンテナの削除
+```
+docker container rm [コンテナ名]
+```
+削除対象は複数指定可能
+```
+docker container rm [コンテナ名1] [コンテナ名2] [コンテナ名3] ...
+```
+
+コンテナ以外にも同様のコマンドがある<br>
+`docker network ***`<br>
+`docker image ***`<br>
+`docker volume ***`
+
 ## Webサーバー + ソフトウェア + DB
 ### MySQL(5.7) + Wordpress
 ```
@@ -59,14 +95,14 @@ docker run --name mariadb000ex17 -dit --net=wordpress000net4 -e MYSQL_ROOT_PASSW
 docker run --name wordpress000ex18 -dit --net=wordpress000net4 -p 8088:80 -e WORDPRESS_DB_HOST=mariadb000ex17 -e WORDPRESS_DB_NAME=wordpress000db -e WORDPRESS_DB_USER=wordpress000aloekun -e WORDPRESS_DB_PASSWORD=waloekunpass wordpress
 ```
 
-### ホストマシンからDockerコンテナにファイルをコピー
+### ホストマシンから Docker コンテナにファイルをコピー
 ※ ホストマシン上にパスに該当するファイルが必要
 ```
 docker run --name apa000ex19 -d -p 8089:80 httpd
 docker cp E:\work\docker-kubernetes-practice\index.html apa000ex19:/usr/local/apache2/htdocs/
 ```
 
-### Dockerコンテナからホストマシンにファイルをコピー
+### Docker コンテナからホストマシンにファイルをコピー
 ※ ホストマシン上にパスに該当するファイルが必要
 ```
 docker run --name apa000ex19 -d -p 8089:80 httpd

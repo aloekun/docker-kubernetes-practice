@@ -108,3 +108,58 @@ docker cp E:\work\docker-kubernetes-practice\index.html apa000ex19:/usr/local/ap
 docker run --name apa000ex19 -d -p 8089:80 httpd
 docker cp apa000ex19:/usr/local/apache2/htdocs/index.html E:\work\docker-kubernetes-practice
 ```
+
+### Docker にホストマシンのフォルダをマウント
+個別ファイルのマウントも可能。<br>
+フォルダをマウントしたら、Dockerからもホストマシンからもファイルを出し入れできる。<br>
+※ ホストマシン上にパスに該当するフォルダが必要
+```
+docker run --name apa000ex20 -d -p 8090:80 -v E:\work\docker-kubernetes-practice\apa_folder:/usr/local/apache2/htdocs httpd
+```
+
+### Docker のボリュームとDockerのディレクトリをマウント
+```
+docker volume create apa000vol1
+docker run --name apa000ex21 -d -p 8091:80 -v apa000vol1:/usr/local/apache2/htdocs httpd
+```
+ボリュームは Docker からしかアクセスできないため、マシン上での確認方法は限られる。
++ ボリュームの確認
+```
+docker volume inspect apa000vol1
+```
+次のような結果が得られればOK
+```text
+[
+    {
+        "CreatedAt": "2025-03-15T07:20:01Z",
+        "Driver": "local",
+        "Labels": null,
+        "Mountpoint": "/var/lib/docker/volumes/apa000vol1/_data",
+        "Name": "apa000vol1",
+        "Options": null,
+        "Scope": "local"
+    }
+]
+```
+
++ コンテナからの確認
+```
+docker container inspect apa000ex21
+```
+次のような結果が得られればOK
+```text
+    ...
+    "Mounts": [
+        {
+            "Type": "volume",
+            "Name": "apa000vol1",
+            "Source": "/var/lib/docker/volumes/apa000vol1/_data",
+            "Destination": "/usr/local/apache2/htdocs",
+            "Driver": "local",
+            "Mode": "z",
+            "RW": true,
+            "Propagation": ""
+        }
+    ],
+    ...
+```

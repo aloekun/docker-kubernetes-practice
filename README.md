@@ -208,3 +208,88 @@ docker exec -it apa000ex23 /bin/bash
 ```
 apt install mysql-server
 ```
+
+### Docker イメージを公開する
+ローカルレジストリを使う場合と Docker Hub を使う場合がある。
++ ローカルレジストリを使う
+1. ローカルレジストリを作る<br>
+ローカルレジストリを Docker コンテナで作る。<br>
+```
+docker run --name registry -d -p 5000:5000 registry
+```
+2. Docker イメージに公開用のタグを付ける。<br>
+```
+docker tag [イメージ名] [レジストリ名]/[リポジトリ名]:[バージョン]
+docker tag ubuntu_with_apache localhost:5000/ubuntu_aloekun:1
+```
+3. ローカルレジストリにイメージを公開する
+```
+docker push localhost:5000/ubuntu_aloekun:1
+```
+
++ ローカルレジストリに登録されたイメージを確認する
+```
+curl http://localhost:5000/v2/_catalog
+```
+次のような結果で、`Content` の `repositories` にリポジトリ名が出ていれば OK
+```
+StatusCode        : 200
+StatusDescription : OK
+Content           : {"repositories":["ubuntu_aloekun"]}
+
+RawContent        : HTTP/1.1 200 OK
+                    Docker-Distribution-Api-Version: registry/2.0
+                    X-Content-Type-Options: nosniff
+                    Content-Length: 36
+                    Content-Type: application/json; charset=utf-8
+                    Date: Sun, 16 Mar 2025 14:16:15 GMT...
+Forms             : {}
+Headers           : {[Docker-Distribution-Api-Version, registry/2.0], [X-Content-Type-Options, nosniff], [Content-Length, 36], [Content-Type, application/json; charset=utf-8]...}
+Images            : {}
+InputFields       : {}
+Links             : {}
+ParsedHtml        : System.__ComObject
+RawContentLength  : 36
+```
+
++ ローカルレジストリから登録したイメージを削除する
+公式で公開されている手順でひと手間かかる。<br>
+1. ローカルレジストリのコンテナにアクセスする
+```
+docker exec -it registry /bin/sh
+```
+
+2. (コンテナ内)リポジトリのデータがあることを確認する
+```
+ls /var/lib/registry/docker/registry/v2/repositories/
+```
+次のようにアップロードしたリポジトリ名が表示されれば、OK
+```
+ubuntu_aloekun
+```
+
+3. (コンテナ内)削除するファイル一覧を確認する
+ここで表示された内容で消したくないものがあれば、結果をフィルタする
+```
+find /var/lib/registry/docker/registry/v2/repositories/
+```
+
+4. (コンテナ内)リポジトリのデータを削除する
+```
+rm -rf /var/lib/registry/docker/registry/v2/repositories/*
+```
+
+5. コンテナから出る
+```
+exit
+```
+
+6. コンテナの外でガーベジコレクションを実行する
+```
+docker exec registry registry garbage-collect /etc/docker/registry/config.yml
+```
+
+7. リポジトリのデータが消えたことを確認する
+```
+curl http://localhost:5000/v2/_catalog
+```

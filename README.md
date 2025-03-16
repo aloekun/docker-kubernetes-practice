@@ -7,6 +7,15 @@ Docker/Kubernetes の操作を学ぶリポジトリ
 Mac, Linux 向けの Docker もある(未検証)
 
 # 学んだこと
+
+### Docker は Linux で動く前提
+
+Docker の管理ソフト(Docker Desktop for Windows など)をインストーすれば Docker は使える。<br>
+その管理ソフトの実体は、各種 OS 上で Linux を動かしている。<br>
+<br>
+Docker コンテナの中も Linux が動く。<br>
+任意の Linux ディストリビューションを入れたコンテナを使うことになる。
+
 ### Docker コンテナのライフサイクル
 
 Docker コンテナは、作ってすぐ捨てる想定で構築する。<br>

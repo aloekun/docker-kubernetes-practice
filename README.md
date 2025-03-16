@@ -195,3 +195,16 @@ COPY index.html /usr/local/apache2/htdocs/
 ```
 docker build -t ex22_original2 E:\work\docker-kubernetes-practice\apa_folder\
 ```
+
+### Docker コンテナをカスタマイズ
+Docker コンテナは Linux 環境になっている。<br>
+ディストリビューション(Debian系, RedHat系など)に合わせたコマンドが使用可能。
+```
+docker exec -it apa000ex23 /bin/bash
+```
++ Ubuntu で Apache 環境に mysql をインストールする場合<br>
+※ Ubuntu イメージそのままだと apt のバージョンが古いことがある。<br>
+そのときは `apt update` を実行すると上手くいくかもしれない。
+```
+apt install mysql-server
+```

@@ -294,6 +294,11 @@ docker exec registry registry garbage-collect /etc/docker/registry/config.yml
 curl http://localhost:5000/v2/_catalog
 ```
 
+8. タグを付けたイメージを削除する
+```
+docker rmi localhost:5000/ubuntu_aloekun:1
+```
+
 + Docker Hub を使う<br>
 1. Docker Hub の GUI でリポジトリを作る
 

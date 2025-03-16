@@ -252,7 +252,7 @@ ParsedHtml        : System.__ComObject
 RawContentLength  : 36
 ```
 
-+ ローカルレジストリから登録したイメージを削除する
++ ローカルレジストリから登録したイメージを削除する<br>
 公式で公開されている手順でひと手間かかる。<br>
 1. ローカルレジストリのコンテナにアクセスする
 ```
@@ -268,7 +268,7 @@ ls /var/lib/registry/docker/registry/v2/repositories/
 ubuntu_aloekun
 ```
 
-3. (コンテナ内)削除するファイル一覧を確認する
+3. (コンテナ内)削除するファイル一覧を確認する<br>
 ここで表示された内容で消したくないものがあれば、結果をフィルタする
 ```
 find /var/lib/registry/docker/registry/v2/repositories/
@@ -292,4 +292,20 @@ docker exec registry registry garbage-collect /etc/docker/registry/config.yml
 7. リポジトリのデータが消えたことを確認する
 ```
 curl http://localhost:5000/v2/_catalog
+```
+
++ Docker Hub を使う<br>
+1. Docker Hub の GUI でリポジトリを作る
+
+2. Docker Hub へログイン<br>
+コンソールから Docker Hub へ `docker push` するには、
+コンソールから Docker Hub へログインが必要
+```
+docker login
+```
+
+3. Docker Hub へ登録<br>
+tag に Docker Hub の `[ユーザー名]/[リポジトリ名]` を付けて、作った tag を登録する。
+```
+docker push aloekun/test:1
 ```

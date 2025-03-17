@@ -38,6 +38,22 @@ Web サーバー(Apache, nginx) や DB(MySQL, MariaDB) などの主要なソフ�
 また、自分で育てたコンテナを再度イメージとして出力可能。<br>
 これにより、 1 人が作った Docker イメージをチームに共有して、開発環境を統一する使い方ができる。
 
+### Docker コマンドをあらかじめ書いておいて実行するには、 docker-compose を使う
+
+Docker Compose を使うと、 Docker コマンドに相当する記述をあらかじめ書いておける。
+
+Docker Compose に似たもので Dockerfile があるが、別物。<br>
+Docker Compose はコンテナの設定やコンテナ同士の関係性を記述する。<br>
+Dockerfile はコンテナの元となるイメージの内容を記述する。
+
+Docker Compose は Docker Desktop に同梱されているので、 Linux 以外は個別のインストール不要。
+
+Docker Compose はコンテナの起動・停止・削除程度しかできないので、<br>
+もっと複雑なコンテナ操作は Kubernetes などのコンテナオーケストレーションツールを使う。
+
+Docker Compose のファイル名は慣例として `docker-compose.yml` を使う。<br>
+別名を付ける方法もある。
+
 # 使用例
 ## よく使うコマンド
 
@@ -104,6 +120,7 @@ docker run --name mariadb000ex17 -dit --net=wordpress000net4 -e MYSQL_ROOT_PASSW
 docker run --name wordpress000ex18 -dit --net=wordpress000net4 -p 8088:80 -e WORDPRESS_DB_HOST=mariadb000ex17 -e WORDPRESS_DB_NAME=wordpress000db -e WORDPRESS_DB_USER=wordpress000aloekun -e WORDPRESS_DB_PASSWORD=waloekunpass wordpress
 ```
 
+## コンテナをカスタマイズする
 ### ホストマシンから Docker コンテナにファイルをコピー
 ※ ホストマシン上にパスに該当するファイルが必要
 ```
@@ -313,4 +330,21 @@ docker login
 tag に Docker Hub の `[ユーザー名]/[リポジトリ名]` を付けて、作った tag を登録する。
 ```
 docker push aloekun/test:1
+```
+
+## Docker Compose の使用例
+Docker Compose は Docker Engine とは別ソフトなので、`docker-compose` コマンドを使う
+### MySQL(5.7) + Wordpress
+`docker-compose.yml` を作る。<br>
+（実体は `com_folder\docker-compose.yml` 参照）
+
++ Docker Compose 経由で Docker コンテナを作成 + 起動<br>
+（2 回目以降は、コンテナ作成済みとなり、起動のみするコマンド）
+```
+docker-compose -f E:\work\docker-kubernetes-practice\com_folder\docker-compose.yml up -d
+```
+
++ Docker Compose 経由で Docker コンテナを停止　+ 削除
+```
+docker-compose -f E:\work\docker-kubernetes-practice\com_folder\docker-compose.yml down
 ```

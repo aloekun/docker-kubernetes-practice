@@ -3,8 +3,12 @@ Docker/Kubernetes の操作を学ぶリポジトリ
 
 # 導入手順
 ### Windows
-1. Docker Desktop for Windows をインストールする(これだけ)<br>
+1. Docker Desktop for Windows をインストールする<br>
+Docker を使うならこれだけで OK。<br>
 Mac, Linux 向けの Docker もある(未検証)
+
+2. Docker Desktop の設定で Kubernetes を有効にする<br>
+Kubernetes は Docker Desktop に同梱されている。
 
 # 学んだこと
 
@@ -53,6 +57,22 @@ Docker Compose はコンテナの起動・停止・削除程度しかできな�
 
 Docker Compose のファイル名は慣例として `docker-compose.yml` を使う。<br>
 別名を付ける方法もある。
+
+### Kubernetes は、 Docker コンテナの理想の状態を維持する
+
+Kubernetes はサービスとポッドを管理する。<br>
+サービスは複数のポッドを内包する。サービスは外からの入口の役割を果たす。<br>
+ポッドはコンテナとボリュームで構成される。1ポッド・1コンテナになっている。
+
+Kubernetes は Docker Compose と同様に yml ファイルで定義する。<br>
+たとえば、3つのポッドを持つサービスを作る yml ファイルを書いて Kubernetes で起動すると、<br>
+1つのポッドが不具合で急停止したときに、 Kubernetes が自動で新しいポッドを作成して、<br>ポッドが3つ稼働する状態を維持する。
+
+また、リアルタイムに設定の書き換えができる。<br>
+たとえば、yml でポッドの数を増減させて適用させると、順次ポッドの数が適用される。
+
+別の例として、Apache のポッドを立てた後に、 yml で Nginx に書き換えて適用すると、<br>
+段階的に Nginx のポッドが作られ、 Apache のポッドは順次削除される。
 
 # 使用例
 ## よく使うコマンド
@@ -333,7 +353,8 @@ docker push aloekun/test:1
 ```
 
 ## Docker Compose の使用例
-Docker Compose は Docker Engine とは別ソフトなので、`docker-compose` コマンドを使う
+
+Docker Compose は Docker Engine とは別ソフトなので、`docker-compose` コマンドを使う。
 ### MySQL(5.7) + Wordpress
 `docker-compose.yml` を作る。<br>
 （実体は `com_folder\docker-compose.yml` 参照）
@@ -347,4 +368,98 @@ docker-compose -f E:\work\docker-kubernetes-practice\com_folder\docker-compose.y
 + Docker Compose 経由で Docker コンテナを停止　+ 削除
 ```
 docker-compose -f E:\work\docker-kubernetes-practice\com_folder\docker-compose.yml down
+```
+
+## Kubernetes の使用例
+
+Kubernetes は　Docker Engine とは別ソフトなので、`kubectl` コマンドを使う。
+
+### yml のデプロイを実行する
+デプロイ内容は `kube_folder\apa000dep.yml` を参照。
+```
+kubectl apply -f E:\work\docker-kubernetes-practice\kube_folder\apa000dep.yml
+```
+次の表示が出る。
+```
+deployment.apps/apa000dep created
+```
+正常にポッドが作成されたかは、次のコマンドで確認する
+```
+kubectl get pods
+```
+次の結果が出れば、OK。
+```
+NAME                         READY   STATUS              RESTARTS   AGE
+apa000dep-5655dc7c86-4drxt   0/1     Running             0          54s
+apa000dep-5655dc7c86-bl7kk   0/1     Running             0          54s
+apa000dep-5655dc7c86-rnzcb   0/1     Running             0          54s
+```
+
+### yml のサービスを実行する
+サービスの内容は `` を参照。
+```
+kubectl apply -f E:\work\docker-kubernetes-practice\kube_folder\apa000ser.yml
+```
+次のコマンドでサービスを確認できる
+```
+kubectl get services
+```
+次のような結果が出れば、OK。
+```
+NAME         TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+apa000ser    NodePort    10.108.166.136   <none>        8099:30080/TCP   2m59s
+```
+
+### yml を変更して再度デプロイを実行する
+「yml のデプロイを実行する」と同じコマンドを実行すればよい。
+```
+kubectl apply -f E:\work\docker-kubernetes-practice\kube_folder\apa000dep.yml
+```
+変更の反映時は、次の表示が出る。
+```
+deployment.apps/apa000dep configured
+```
+
+### ポッドを指定して削除する
+`kubectl get pods` で確認した NAME を使って、ポッドを削除できる。<br>
+Kubernetes が新しいポッドを自動で作り直すことを確認できる。
+
+```
+kubectl delete pod apa000dep-76dfb79774-6xqns
+```
+
+ポッドを正常に削除したら、次の表示が出る。
+```
+pod "apa000dep-76dfb79774-6xqns" deleted
+```
+
+### yml のデプロイを停止・ポッドを削除する
+yml でまとめて作成・起動したポッドは、 yml でまとめて停止・削除できる。
+```
+kubectl delete -f E:\work\docker-kubernetes-practice\kube_folder\apa000dep.yml
+```
+
+正常に実行したら、次の表示が出る。
+```
+deployment.apps "apa000dep" deleted
+```
+
+次のコマンドでポッドがなくなったことを確認できる。
+```
+kubectl get pods
+```
+ポッドがない場合は次の表示になる。
+```
+No resources found in default namespace.
+```
+
+### yml のサービスを停止する
+サービスもデプロイファイルと同様で yml ファイルで停止する。
+```
+kubectl delete -f E:\work\docker-kubernetes-practice\kube_folder\apa000ser.yml
+```
+
+次の結果が出れば、OK。
+```
+service "apa000ser" deleted
 ```
